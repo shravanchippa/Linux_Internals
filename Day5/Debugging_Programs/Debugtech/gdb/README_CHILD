@@ -1,0 +1,14 @@
+>break main
+>run
+>s
+:
+:
+Until Fork executes and once fork has been executed
+>set pid=0
+>attach pid
+select n
+>set follow-fork-mode child
+>s
+>show follow-fork-mode
+>s
+........terminates after child exits

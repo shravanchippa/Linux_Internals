@@ -1,0 +1,23 @@
+# include <sys/types.h>
+
+int glob = 6;
+char	buff[] = “a write to stdout\n”;
+
+main()
+{
+	int var;
+	pid_t	pid;
+	var  = 88;
+	if((write(STDOUT_FILENO,buff, sizeof(buf) -1 )!= sizeof(buf) -1 )  
+		perror(“ write error \n”);
+	printf(“before fork()\n”);
+	
+	if((pid = fork()) < 0)	perror(“In fork\n”);
+	else	if(pid == 0){
+		glob ++;   var ++;
+	}
+	else
+	sleep(20;
+	printf(“pid = %d, glob = %d , var = %d\n”,getpid, glob, var);
+	exit(0);
+}

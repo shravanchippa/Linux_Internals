@@ -1,0 +1,12 @@
+gcc -g   -o employee employee.c
+./employee
+
+gdb employee
+break main
+run
+next
+next
+watch rec.serial_num
+cont
+backtrace
+

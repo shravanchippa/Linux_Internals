@@ -1,0 +1,47 @@
+
+dynamically loaded shared C library example
+-------------------------------------------
+
+This directory contains a Makefile and a set of source files that
+will create an executable program that uses one of two shared libraries,
+making the decision at runtime.
+
+To run the makefile, just type 'make'. It is also possible to build
+the library only, by typing 'make libutil.a'. If you remove the object
+files of the library ('make cleanlibobjs'), then remove the program 
+('make cleanprog') and then try 'make prog', you will see the program
+still compiles, since all the object files were copied into the library.
+Doing a 'make' again will recompile all the library's object files as
+well.
+
+If you remove the shared libraries themselves altogether ('make cleanlibs'),
+you will get an error message only during runtime of the program.
+
+Note that in order to run the program, you need first to add the current
+directory to your "LD_LIBRARY_PATH" environment variable. If it is
+not defined yet ("echo $LD_LIBRARY_PATH" sais its not defined), then
+define it with:
+
+  If using a shell such as 'csh' or 'tcsh':
+
+    setenv LD_LIBRARY_PATH /full/path/to/current/directory
+
+  If using a shell such as 'sh' or 'bash' or 'ksh':
+
+    LD_LIBRARY_PATH=/full/path/to/current/directory
+    export LD_LIBRARY_PATH
+
+If you already have something in your LD_LIBRARY_PATH, then modify it with:
+
+  If using a shell such as 'csh' or 'tcsh':
+
+    setenv LD_LIBRARY_PATH /full/path/to/current/directory:${LD_LIBRARY_PATH}
+
+  If using a shell such as 'sh' or 'bash' or 'ksh':
+
+    LD_LIBRARY_PATH=/full/path/to/current/directory:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH
+
+To check that you did that properly, you'll need to run the program.
+If it sais that the library file was not found, check the definition of
+LD_LIBRARY_PATH, and the existance of the library in the current directory.

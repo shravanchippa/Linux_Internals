@@ -1,0 +1,14 @@
+OFLAG=-o
+CFLAG=-c
+CC=gcc
+
+prog: main/prog.c add/add.o mean/mean.o mul/mul.o sub/sub.o
+	gcc -o prog $^
+
+clean:
+
+	rm -f add/add.o 
+	rm -f mean/mean.o
+	rm -f mul/mul.o
+	rm -f sub/sub.o
+	rm -f prog

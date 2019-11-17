@@ -1,0 +1,2 @@
+	./fifo3 &
+	time ./fifo4

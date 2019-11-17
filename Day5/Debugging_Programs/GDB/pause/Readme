@@ -1,0 +1,11 @@
+gcc -g -o pause pause.c
+gdb pause
+run
+ctrl-c
+where
+next
+ctrl-c
+where
+break 13
+signal SIGCONT
+

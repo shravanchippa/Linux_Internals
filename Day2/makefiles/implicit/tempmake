@@ -1,0 +1,18 @@
+OFLAG=-o
+CFLAG=-c
+CC=gcc
+ALL=$(TARGET)
+
+prog: prog.o add.o mean.o mul.o sub.o
+	$(CC) $(OFLAG) $@ $^
+add.o: add.c myhead.h
+mean.o: mean.c myhead.h
+mul.o: mul.c myhead.h
+sub.o: sub.c myhead.h
+clean:
+	@rm -f prog
+	@rm -f prog.o
+	@rm -f add.o
+	@rm -f mean.o
+	@rm -f mul.o
+	@rm -f sub.o

@@ -1,0 +1,4 @@
+gcc -g -o Valgrid_ex Valgrid_ex.c
+
+valgrind --tool=memcheck --leak-check=yes Valgrid_ex
+

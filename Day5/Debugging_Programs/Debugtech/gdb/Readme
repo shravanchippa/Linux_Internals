@@ -1,0 +1,12 @@
+1.ulimit -c unlimited
+2.compile gdb2.c with, #gcc -ggdb3 -o debug gdb2.c
+3.execute ./debug(this will generate coredump)
+4.#gdb debug core.2123
+5.#bt(this will show which line contains bug and also shows to which function this belongs to)
+6.#frame 3(getmessage function)
+7.#print input
+8.#set variable input=10
+9.#frame 4(main function)
+10.#print counter
+
+

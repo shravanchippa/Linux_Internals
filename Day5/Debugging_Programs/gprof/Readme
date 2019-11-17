@@ -1,0 +1,13 @@
+	gcc -pg -o sample1 sample1.c
+	then execute ./sample1
+	gmon.out file is created
+	gprof -b ./sample1
+
+	gcov program to look at the actual number of times each line of the program is executed
+	
+	gcc -pg -fprofile-arcs -ftest-coverage -o sample1 sample1.c
+	execute ./sample1
+	gcov sample1.c
+	sample1.c.gcov is created
+	cat sample1.c.gcov
+	  

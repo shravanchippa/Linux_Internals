@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"><head><meta content="text/html; charset=UTF-8" http-equiv="Content-Type"><title>Inside the Linux kernel debugger</title><meta content="(PICS-1.1 &quot;http://www.icra.org/ratingsv02.html&quot; l gen true r (cz 1 lz 1 nz 1 oz 1 vz 1) &quot;http://www.rsac.org/ratingsv01.html&quot; l gen true r (n 0 s 0 v 0 l 0) &quot;http://www.classify.org/safesurf/&quot; l gen true r (SS~~000 1))" http-equiv="PICS-Label"><link href="http://purl.org/DC/elements/1.0/" rel="schema.DC"><link href="http://www.ibm.com/favicon.ico" rel="SHORTCUT ICON"><meta content="dW Information/Raleigh/IBM" name="Owner"><meta content="en-US" scheme="rfc1766" name="DC.Language"><meta content="ZZ" name="IBM.Country"><meta content="Public" name="Security"><meta name="Abstract" content="When debugging kernel problems, being able to trace the kernel execution and examine its memory and data structures is very useful. The built-in kernel debugger in Linux, KDB, provides this facility. In this article you'll learn how to use the features provided by KDB and how to install and set up KDB on a Linux machine. You'll also get acquainted with the commands and the setup and display options available to you in KDB."><meta name="Description" content="When debugging kernel problems, being able to trace the kernel execution and examine its memory and data structures is very useful. The built-in kernel debugger in Linux, KDB, provides this facility. In this article you'll learn how to use the features provided by KDB and how to install and set up KDB on a Linux machine. You'll also get acquainted with the commands and the setup and display options available to you in KDB."><meta name="Keywords" content="Hariprasad Nellitheertha linux kernel debugger debugging kdb break set points stack trace tracing traceback ibm developerworks, tttlca, tttosca"><meta name="DC.Date" scheme="iso8601" content="2003-06-05"><meta name="Source" content="Based on v14 Template Generator, Template 14.0"><meta name="DC.Rights" content="Copyright (c) 2003 by IBM Corporation"> <meta name="Robots" content="index,follow"><meta name="IBM.Effective" scheme="W3CDTF" content="2003-06-05"><meta name="Last update" content="13062005ganesab@us.ibm.com"><link href="Inside%20the%20Linux%20kernel%20debugger_files/table.css" media="screen,print" type="text/css" rel="stylesheet"><script language="JavaScript" src="Inside%20the%20Linux%20kernel%20debugger_files/dwcss14.js" type="text/javascript"></script><link rel="stylesheet" href="Inside%20the%20Linux%20kernel%20debugger_files/r1v14.css" type="text/css"><link href="Inside%20the%20Linux%20kernel%20debugger_files/main.css" type="text/css" rel="stylesheet"><link href="Inside%20the%20Linux%20kernel%20debugger_files/screen.css" media="all" type="text/css" rel="stylesheet"><link href="Inside%20the%20Linux%20kernel%20debugger_files/print.css" media="print" type="text/css" rel="stylesheet"><script language="JavaScript" src="Inside%20the%20Linux%20kernel%20debugger_files/detection.js" type="text/javascript"></script>
+<script language="JavaScript" src="Inside%20the%20Linux%20kernel%20debugger_files/dropdown.js" type="text/javascript"></script>
+<script language="JavaScript" src="Inside%20the%20Linux%20kernel%20debugger_files/grabtitle.js" type="text/javascript"></script>
+<script language="JavaScript" src="Inside%20the%20Linux%20kernel%20debugger_files/emailfriend2.js" type="text/javascript"></script><style type="text/css"> code.section {font-family: Andale Mono, Lucida Console, Monaco, fixed, monospace; font-size: 100%} .boldcode {font-family: Andale Mono, Lucida Console, Monaco, fixed, monospace; font-size: 100%; font-weight: bold} .rboldcode {font-family: Andale Mono, Lucida Console, Monaco, fixed, monospace; font-size: 100%; font-weight: bold; color: #ff0000} .gboldcode {font-family: Andale Mono, Lucida Console, Monaco, fixed, monospace; font-size: 100%; font-weight: bold; color: #ff6600} .bboldcode {font-family: Andale Mono, Lucida  Console, Monaco, fixed, monospace; font-size: 100%; font-weight: bold; color: #3c5f84} </style><style type="text/css">
+.atitle { font-family:arial,sans-serif; font-size:18px; }
+</style><script language="JavaScript" type="text/javascript">var title = "Inside the Linux kernel debugger"; </script><script language="JavaScript" type="text/javascript">var forumURL = ""; </script><script language="JavaScript" type="text/javascript">var contentAreaList = "linux, opensource"; </script><script type="text/javascript" language="JavaScript" src="Inside%20the%20Linux%20kernel%20debugger_files/forumwindow.js"></script><script language="JavaScript" type="text/javascript">var emailAbstract = "When debugging kernel problems, being able to trace the kernel execution and examine its memory and data structures is very useful. The built-in kernel debugger in Linux, KDB, provides this facility. In this article you'll learn how to use the features provided by KDB and how to install and set up KDB on a Linux machine. You'll also get acquainted with the commands and the setup and display options available to you in KDB."; </script></head><body><!--MASTHEAD_BEGIN--><!-- begin masthead dw liquid -->
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr valign="top">
+<td class="bbg" width="110"><a href="http://www.ibm.com/"><img alt="IBM®" src="Inside%20the%20Linux%20kernel%20debugger_files/ibm-logo.gif" border="0" height="52" width="110"></a></td>
+<td class="bbg"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c_002.gif" alt="" border="0" height="1" width="1"></td>
+<td class="mbbg" align="right" width="650">
+<table align="right" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr class="cty-tou">
+<td rowspan="2" class="upper-masthead-corner" width="17"><a href="#main"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="Skip to main content" border="0" height="1" width="1"></a></td>
+<td align="left">
+<table align="left" border="0" cellpadding="0" cellspacing="0">
+<tbody><tr>
+<td><span class="spacer">&nbsp;&nbsp;&nbsp;&nbsp;</span><b class="country">Country/region</b><span class="spacer">&nbsp;[</span><a class="ur-link" href="http://www.ibm.com/developerworks/country/">select</a><span class="spacer">]</span></td>
+<td class="upper-masthead-divider" width="29">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left"><a class="ur-link" href="http://www.ibm.com/legal/">Terms of use</a></td>
+</tr>
+</tbody></table>
+</td>
+<td width="40">&nbsp;</td>
+</tr>
+<tr>
+<td class="cty-tou-border" colspan="2" height="1"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="1" width="1"></td>
+</tr>
+<tr>
+<td colspan="3"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="8" width="1"></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td colspan="2" align="center">
+<input name="searchType" value="1" type="hidden"><input value="dW" name="searchSite" type="hidden">
+<table border="0" cellpadding="0" cellspacing="0">
+<tbody><tr>
+<form method="get" action="http://www-128.ibm.com/developerworks/search/searchResults.jsp" id="form1" name="form1"></form><td width="18"><label for="q"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="Search in:" height="1" width="1"></label></td>
+<td align="right"><select id="sq" name="searchScope" class="input-local" size="1"><option value="dW">All of dW</option><option value="dW">-----------------</option><option value="db2">&nbsp;&nbsp;DB2</option><option value="eserver">&nbsp;&nbsp;eServer</option><option value="lotus">&nbsp;&nbsp;Lotus</option><option value="rdd">&nbsp;&nbsp;Rational</option><option value="tivoli">&nbsp;&nbsp;Tivoli</option><option value="WSDD">&nbsp;&nbsp;WebSphere</option><option value="dW">-----------------</option><option value="acZ">&nbsp;&nbsp;Autonomic computing</option><option value="gridZ">&nbsp;&nbsp;Grid computing</option><option value="javaZ">&nbsp;&nbsp;Java technology</option><option value="linuxZ">&nbsp;&nbsp;Linux</option><option value="opensrcZ">&nbsp;&nbsp;Open source</option><option value="paZ">&nbsp;&nbsp;Power Architecture</option><option value="webservZ">&nbsp;&nbsp;SOA &amp; Web services</option><option value="webarchZ">&nbsp;&nbsp;Web architecture</option><option value="wirelessZ">&nbsp;&nbsp;Wireless</option><option value="xmlZ">&nbsp;&nbsp;XML</option><option value="dW">-----------------</option><option value="forums">&nbsp;&nbsp;dW forums</option><option value="dW">-----------------</option><option value="toolbox">&nbsp;&nbsp;dW Subscription</option><option value="dW">-----------------</option><option value="aW">alphaWorks</option><option value="dW">-----------------</option><option value="all">All of IBM</option></select></td>
+<td align="right" width="7"><label for="q"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="Search for:" height="1" width="1"></label>&nbsp;&nbsp;</td>
+<td align="right"><input class="input" id="q" maxlength="100" name="query" size="15" value="" type="text">
+</td>
+<td width="7">&nbsp;
+</td>
+<td width="90"><input alt="Search" name="Search" src="Inside%20the%20Linux%20kernel%20debugger_files/search.gif" value="Search" type="image"></td>
+<!-- <td width="20">&nbsp;</td> -->
+
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td class="blbg" colspan="3">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td>
+<table border="0" cellpadding="0" cellspacing="0">
+<tbody><tr>
+<td><span class="spacer">&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+<td><a class="masthead-mainlink" href="http://www.ibm.com/">Home</a></td>
+<td class="masthead-divider" width="27">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td><a class="masthead-mainlink" href="http://www.ibm.com/products/">Products</a></td>
+<td class="masthead-divider" width="27">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td><a class="masthead-mainlink" href="http://www.ibm.com/servicessolutions/">Services &amp; solutions</a></td>
+<td class="masthead-divider" width="27">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td><a class="masthead-mainlink" href="http://www.ibm.com/support/">Support &amp; downloads</a></td>
+<td class="masthead-divider" width="27">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td><a class="masthead-mainlink" href="http://www.ibm.com/account/">My account</a></td>
+<td><span class="spacer">&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--
+<script src="//www.ibm.com/common/v14/pmh.js" language="JavaScript" type="text/javascript"></script>
+-->
+<!-- end masthead dw liquid --><!--MASTHEAD_END--><table id="v14-body-table" border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr valign="top"><!--LEFTNAV_BEGIN--><td id="navigation" width="150"><table border="0" cellpadding="0" cellspacing="0" width="150"><tbody><tr><td class="left-nav-spacer"><a href="http://www.ibm.com/developerworks" class="left-nav-overview">&nbsp;</a></td></tr></tbody></table><table border="0" cellpadding="0" cellspacing="0" width="150"><tbody><tr><th colspan="2" class="left-nav-overview"><a href="http://www.ibm.com/developerworks" class="left-nav-overview">developerWorks</a></th></tr></tbody></table><table border="0" cellpadding="0" cellspacing="0" width="150"><tbody><tr><td colspan="2" class="left-nav-highlight"><a href="#" class="left-nav">In this article:</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#N10055" class="left-nav-child">Getting started</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#N100A2" class="left-nav-child">Initializing and setting the environment variables</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#N100AD" class="left-nav-child">Activating KDB</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#N100E3" class="left-nav-child">KDB commands</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#N10336" class="left-nav-child">Tips and tricks</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#N1048A" class="left-nav-child">Conclusion</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#resources" class="left-nav-child">Resources</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#author" class="left-nav-child">About the author</a></td></tr><tr class="left-nav-child-highlight"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/cl-bullet.gif" height="8" width="2"></td><td><a href="#rate" class="left-nav-child">Rate this page</a></td></tr><tr class="left-nav-last"><td width="14"><img class="display-img" alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="14"></td><td width="136"><img class="display-img" alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/left-nav-corner.gif" height="19" width="136"></td></tr></tbody></table><br><table border="0" cellpadding="0" cellspacing="0" width="150"><tbody><tr><td class="related" colspan="2"><b class="related">Related links</b></td></tr><tr class="rlinks"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/rl-bullet.gif" height="8" width="2"></td><td><a class="rlinks" href="http://www.ibm.com/developerworks/views/linux/library.jsp">Linux technical library</a></td></tr><tr class="rlinks"><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/rl-bullet.gif" height="8" width="2"></td><td><a class="rlinks" href="http://www.ibm.com/developerworks/views/opensource/library.jsp">Open source projects technical library</a></td></tr><tr><td width="14"><img class="display-img" alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="14"></td><td width="136"><img class="display-img" alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="19" width="136"></td></tr></tbody></table></td><!--LEFTNAV_END--><td width="100%"><table id="content-table" border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr valign="top"><td width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><a name="main"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" border="0" height="1" width="592"></a></td></tr></tbody></table><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr valign="top"><td height="18" width="10"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="18" width="10"></td><td width="100%"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="6" width="1"><br><a href="http://www.ibm.com/developerworks/" class="bctl">developerWorks</a><span class="bct">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span><a class="bctl" href="http://www.ibm.com/developerworks/linux">Linux</a><span class="bct">&nbsp;|&nbsp;</span><a href="http://www-124.ibm.com/developerworks/oss/" class="bctl">Open source projects</a><span class="bct">&nbsp;&nbsp;&gt;</span><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="1"><br><h1>Inside the Linux kernel debugger</h1><p id="subtitle"><em>A guide to getting started with KDB</em></p><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" class="display-img" height="6" width="1"></td><td class="no-print" width="192"><img alt="developerWorks" src="Inside%20the%20Linux%20kernel%20debugger_files/dw.gif" height="18" width="192"></td></tr></tbody></table></td></tr></tbody></table><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr valign="top"><td width="10"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="10"></td><td width="100%"><table class="no-print" align="right" border="0" cellpadding="0" cellspacing="0" width="160"><tbody><tr><td width="10"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="10"></td><td><table border="0" cellpadding="0" cellspacing="0" width="150"><tbody><tr><td class="v14-header-1-small">Document options</td></tr></tbody></table><table class="v14-gray-table-border" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="no-padding" width="150"><table border="0" cellpadding="0" cellspacing="0" width="143"><script language="JavaScript" type="text/javascript">
+<!--
+document.write('<tr valign="top"><td width="8"><img src="//www.ibm.com/i/c.gif" width="8" height="1" alt=""/></td><td width="16"><img alt="Set printer orientation to landscape mode" height="16" src="//www.ibm.com/i/v14/icons/printer.gif" width="16" vspace="3" /></td><td width="122"><p><b><a class="smallplainlink" href="javascript:print()">Print this page</a></b></p></td></tr>');
+//-->
+</script><tbody><tr valign="top"><td width="8"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="1" width="8"></td><td width="16"><img alt="Set printer orientation to landscape mode" src="Inside%20the%20Linux%20kernel%20debugger_files/printer.gif" height="16" vspace="3" width="16"></td><td width="122"><p><b><a class="smallplainlink" href="javascript:print()">Print this page</a></b></p></td></tr>
+<noscript></noscript><script language="JavaScript" type="text/javascript">
+<!--
+document.write('<tr valign="top"><td width="8"><img src="//www.ibm.com/i/c.gif" width="8" height="1" alt=""/></td><td width="16"><img src="//www.ibm.com/i/v14/icons/em.gif" height="16" width="16" vspace="3" alt="Email this page" /></td><td width="122"><p><a class="smallplainlink" href="javascript:void newWindow()"><b>E-mail this page</b></a></p></td></tr>');
+//-->
+</script><tr valign="top"><td width="8"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="1" width="8"></td><td width="16"><img src="Inside%20the%20Linux%20kernel%20debugger_files/em.gif" alt="Email this page" height="16" vspace="3" width="16"></td><td width="122"><p><a class="smallplainlink" href="javascript:void newWindow()"><b>E-mail this page</b></a></p></td></tr><noscript><tr
+valign="top"><td width="8"><img alt="" height="1" width="8"
+src="//www.ibm.com/i/c.gif"/></td><td width="16"><img alt="" width="16"
+height="16" src="//www.ibm.com/i/c.gif"/></td><td class="small"
+width="122"><p><span class="ast">Document options requiring JavaScript
+are not displayed</span></p></td></tr></noscript></tbody></table></td></tr></tbody></table><br><table border="0" cellpadding="0" cellspacing="0" width="150"><tbody><tr><td class="v14-header-1-small">Rate this page</td></tr></tbody></table><table class="v14-gray-table-border" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="no-padding" width="150"><table border="0" cellpadding="0" cellspacing="0" width="143"><tbody><tr valign="top"><td width="8"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="8"></td><td><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/d_bold.gif" border="0" height="16" vspace="3" width="16"></td><td width="125"><p><a href="#rate" class="smallplainlink"><b>Help us improve this content</b></a></p></td></tr></tbody></table></td></tr></tbody></table><br></td></tr></tbody></table><p>Level: Advanced</p><p><a href="#author">Hariprasad Nellitheertha </a> (<a href="mailto:nharipra@in.ibm.com?subject=Inside%20the%20Linux%20kernel%20debugger">nharipra@in.ibm.com</a>), Software engineer, IBM<br></p><p> 05 Jun  2003</p><blockquote>When
+debugging kernel problems, being able to trace the kernel execution and
+examine its memory and data structures is very useful. The built-in
+kernel debugger in Linux, KDB, provides this facility. In this article
+you'll learn how to use the features provided by KDB and how to install
+and set up KDB on a Linux machine. You'll also get acquainted with the
+commands and the setup and display options available to you in KDB.</blockquote>
+
+<p>The Linux kernel debugger (KDB) allows you to debug the Linux
+kernel. This aptly named tool is essentially a patch to the kernel code
+that lets hackers access kernel memory and data structures. One of the
+main advantages of KDB is that it does not require an additional
+machine for debugging: you can debug the kernel that you are running on.</p>
+
+<p>Setting up a machine for KDB requires a little work in that the
+kernel needs to be patched and recompiled. Users of KDB should be
+familiar with compiling the Linux kernel (and with kernel internals, to
+an extent), but refer to the <a href="#resources">Resources</a> section at the end of this article if you need help compiling the kernel.</p>
+
+<p>In this article we'll start with information on downloading KDB
+patches, applying them, (re)compiling the kernel, and starting KDB.
+Then we'll get into the KDB commands and review some of the more
+often-used commands. Finally, we'll look at some details about the
+setup and display options.</p>
+
+<p><a name="N10055"><span class="atitle">Getting started</span></a></p>
+
+<p>The KDB project is maintained by Silicon Graphics (see <a href="#resources">Resources</a> for a link), and you will need to download kernel-version dependent patches from its <a href="ftp://oss.sgi.com/www/projects/kdb/download">FTP site</a>.
+The latest version of KDB available (at the time this article was
+written) is 4.2. You'll need to download and apply two patches. One is
+the "common" patch that contains the changes for the generic kernel
+code, and the other is the architecture-specific patch. The patches are
+available as bz2 files. On an x86 machine running the 2.4.20 kernel,
+for example, you would need kdb-v4.2-2.4.20-common-1.bz2 and
+kdb-v4.2-2.4.20-i386-1.bz2.</p>
+
+<p>All examples provided here are for the i386 architecture and the
+2.4.20 kernel. You will need to make suitable changes based on your
+machine and kernel version. You will also need root permissions for
+performing these operations.</p>
+
+<p>Copy the files into the /usr/src/linux directory and extract the patch files from the bzipped files:</p>
+
+<blockquote>
+<code>
+#bzip2 -d kdb-v4.2-2.4.20-common-1.bz2<br>
+<br>
+#bzip2 -d kdb-v4.2-2.4.20-i386-1.bz2
+</code>
+</blockquote>
+
+<p>You will get the kdb-v4.2-2.4.20-common-1 and kdb-v4.2-2.4-i386-1 files.</p>
+
+<p>Now, apply the patches:</p>
+
+<blockquote>
+<code>
+#patch -p1 &lt;kdb-v4.2-2.4.20-common-1<br>
+<br>
+#patch -p1 &lt;kdb-v4.2-2.4.20-i386-1
+</code>
+</blockquote>
+
+<p>The patches should apply cleanly. Look for any files ending with
+.rej. This indicates failed patches. If the kernel tree is clean, the
+patches should apply without any problems.</p>
+
+<p>Next, the kernel needs to be built with KDB enabled. The first step is to set the <code>CONFIG_KDB</code>
+option. Use your favorite configuration mechanism (xconfig, menuconfig,
+etc.) to do this. Go to the "Kernel hacking" section at the end and
+select the "Built-in Kernel Debugger support" option.</p>
+
+<p>There are also a couple of other options you can select based on
+your preferences. Selecting the "Compile the kernel with frame
+pointers" option (if present) sets the <code>CONFIG_FRAME_POINTER</code>
+flag. This will lead to better stack tracebacks, as the frame pointer
+register is used as a frame pointer rather than a general purpose
+register. You can also select the "KDB off by default" option. This
+will set the <code>CONFIG_KDB_OFF</code> flag and will turn off KDB by default. We'll cover this more in a later section.</p>
+
+<p>Save the configuration and exit. Recompile the kernel. Doing a "make
+clean" is recommended before building the kernel. Install the kernel in
+the usual manner and boot to it.</p>
+
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="N100A2"><span class="atitle">Initializing and setting the environment variables</span></a></p>
+
+<p>You can define KDB commands that will be executed during the
+initialization of KDB. These commands need to be defined in a plain
+text file called kdb_cmds, which exists in the KDB directory of the
+Linux source tree (post patching, of course). This file can also be
+used to define environment variables for setting the display and print
+options. The comments at the beginning of the file offer help on
+editing the file. The disadvantage of using this file is that the
+kernel needs to be rebuilt and reinstalled you change the file.</p>
+
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="N100AD"><span class="atitle">Activating KDB</span></a></p>
+
+<p>If <code>CONFIG_KDB_OFF</code> was not selected during compilation,
+KDB is active by default. Otherwise, you need to activate it explicitly
+-- either by passing the <code>kdb=on</code> flag to the kernel during boot or by doing this once /proc has been mounted:</p>
+
+<blockquote>
+<code>
+#echo "1" &gt;/proc/sys/kernel/kdb
+</code>
+</blockquote>
+
+<p>The reverse of the above steps will deactivate KDB. That is, either passing the <code>kdb=off</code> flag to the kernel or doing the following will deactivate KDB, if KDB is on by default:</p>
+
+<blockquote>
+<code>
+#echo "0" &gt;/proc/sys/kernel/kdb
+</code>
+</blockquote>
+
+<p>There is yet another flag that can be passed to the kernel during boot. The <code>kdb=early</code>
+flag will result in control being passed to KDB very early in the boot
+process. This would help if you need to debug very early during the
+boot process.</p>
+
+<p>There are various ways to invoke KDB. If KDB is on, it will get
+invoked automatically whenever there is a panic in the kernel. Pressing
+the PAUSE key on the keyboard would manually invoke KDB. Another way to
+invoke KDB is through the serial console. Of course, to do this, you
+need to set up the serial console (see <a href="#resources">Resources</a>
+for help on this) and you need a program that reads from the serial
+console. The key sequence Ctrl-A will invoke KDB from the serial
+console.</p>
+
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="N100E3"><span class="atitle">KDB commands</span></a></p>
+
+<p>KDB is a very powerful tool that allows several operations such as
+memory and register modification, applying breakpoints, and stack
+tracing. Based on these, the KDB commands can be classified into
+several categories. Here are details on the most commonly used commands
+in each of these categories.</p>
+
+<p><a name="N100EE"><span class="smalltitle">Memory display and modification</span></a></p>
+
+<p>The most often-used commands in this category are <code>md</code>, <code>mdr</code>, <code>mm</code>, and <code>mmW</code>.</p>
+
+<p>The <code>md</code> command takes an address/symbol and a line count and displays memory starting at the address for <code>line-count</code> number of lines. If <code>line-count</code> is not specified, the defaults as specified by the environment variables are used. If an address is not specified, <code>md</code>
+continues from the last address that was printed. The address is
+printed at the beginning, and the character conversion is printed at
+the end.</p>
+
+<p>The <code>mdr</code> command takes an address/symbol and a byte count and displays the raw contents of memory starting at the specified address for <code>byte-count</code> number of bytes. It is essentially the same as <code>md</code>, but it does not display the starting address and the character conversion at the end. The <code>mdr</code> command is of very little use.</p>
+
+<p>The <code>mm</code> command modifies memory contents. It takes an
+address/symbol and new contents as parameters and replaces the contents
+at the address with <code>new-contents</code>.</p>
+
+<p>The <code>mmW</code> command changes <code>W</code> bytes starting at the address. Note that <code>mm</code> changes a machine word.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To display 15 lines of memory starting at 0xc000000:</b>
+<br>
+<code>
+[0]kdb&gt; md 0xc000000 15
+</code>
+</blockquote>
+
+<blockquote>
+<b>To change the contents of memory location 0xc000000 to 0x10:</b>
+<br>
+<code>
+[0]kdb&gt; mm 0xc000000 0x10
+</code>
+</blockquote>
+
+<p><a name="N10165"><span class="smalltitle">Register display and modification</span></a></p>
+
+<p>The commands in this category are <code>rd</code>, <code>rm</code>, and <code>ef</code>.</p>
+
+<p>The <code>rd</code> command (without any arguments) displays the contents of the processor registers. It optionally takes three arguments. If the <code>c</code> argument is passed, <code>rd</code> displays the processor's control registers; with the <code>d</code> argument, it displays the debug registers; and with the <code>u</code> argument, the register set of the current task, the last time they entered the kernel, are displayed.</p>
+
+<p>The <code>rm</code> command modifies the contents of a register. It takes a register name and <code>new-contents</code> as arguments and modifies the register with <code>new-contents</code>. The register names depend on the specific architecture. Currently, the control registers cannot be modified.</p>
+
+<p>The <code>ef</code> command takes an address as an argument and displays an exception frame at the specified address.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To display the general register set:</b>
+<br>
+<code>
+[0]kdb&gt; rd
+</code>
+</blockquote>
+
+<blockquote>
+<b>To set the contents of register ebx to 0x25:</b>
+<br>
+<code>
+[0]kdb&gt; rm %ebx 0x25
+</code>
+</blockquote>
+
+<p><a name="N101C5"><span class="smalltitle">Breakpoints</span></a></p>
+
+<p>The commonly used breakpoint commands are <code>bp</code>, <code>bc</code>, <code>bd</code>, <code>be</code>, and <code>bl</code>.</p>
+
+<p>The <code>bp</code> command takes an address/symbol as an argument
+and applies a breakpoint at the address. Execution is stopped and
+control is given to KDB when this breakpoint is hit. There are a couple
+of variations of this command that could be useful. The <code>bpa</code> command applies the breakpoint on all processors in an SMP system. The <code>bph</code> command  forces the use of a hardware register on systems that support it. The <code>bpha</code> command is similar to the <code>bpa</code> command except that it forces the use of a hardware register.</p>
+
+<p>The <code>bd</code> command disables a particular breakpoint. It
+takes in a breakpoint number as an argument. This command does not
+remove the breakpoint from the breakpoint table but just disables it.
+The breakpoint numbers start from 0 and are allocated to breakpoints in
+the order of availability.</p>
+
+<p>The <code>be</code> command enables a breakpoint. The argument to this command is also the breakpoint number.</p>
+
+<p>The <code>bl</code> command lists the current set of breakpoints. It includes both the enabled and the disabled breakpoints.</p>
+
+<p>The <code>bc</code> command removes a breakpoint from the breakpoint
+table. It takes either a specific breakpoint number as an argument or
+it takes <code>*</code>, in which case it will remove all breakpoints.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To set up a breakpoint at the function <code>sys_write()</code>:</b>
+<br>
+<code>
+[0]kdb&gt; bp sys_write
+</code>
+</blockquote>
+
+<blockquote>
+<b>To list all the breakpoints in the breakpoint table:</b>
+<br>
+<code>
+[0]kdb&gt; bl
+</code>
+</blockquote>
+
+<blockquote>
+<b>To clear breakpoint number 1:</b>
+<br>
+<code>
+[0]kdb&gt; bc 1
+</code>
+</blockquote>
+
+<p><a name="N10247"><span class="smalltitle">Stack tracing</span></a></p>
+
+<p>The main stack-tracing commands are <code>bt</code>, <code>btp</code>, <code>btc</code>, and <code>bta</code>.</p>
+
+<p>The <code>bt</code> command attempts to provide information on the
+stack for the current thread. It optionally takes a stack frame address
+as an argument. If no address is provided, it takes the current
+registers to traceback the stack. Otherwise, it assumes the provided
+address as a valid stack frame start address and attempts to traceback.
+If the <code>CONFIG_FRAME_POINTER</code> option was set during kernel
+compilation, the frame pointer register is used to maintain stacks and,
+hence, the stack traceback can be performed correctly. The <code>bt</code> command may not produce correct results in the event of <code>CONFIG_FRAME_POINTER</code> not being set.</p>
+
+<p>The <code>btp</code> command takes a process ID as an argument and does a stack traceback for that particular process.</p>
+
+<p>The <code>btc</code> command does a stack traceback for the running process on each live CPU. Starting from the first live CPU, it does a <code>bt</code>, switches to the next live CPU, and so on.</p>
+
+<p>The <code>bta</code> command does a traceback for all processes in a
+particular state. Without any argument, it does a traceback for all
+processes. Optionally, various arguments can be passed to this command.
+The processes in a particular state will be processed depending on the
+argument. The options and the corresponding states are as follows:</p>
+
+<ul>
+<li>D: Uninterruptible state</li>
+<li>R: Running</li>
+<li>S: Interruptible sleep</li>
+<li>T: Traced or stopped</li>
+<li>Z: Zombie</li>
+<li>U: Unrunnable</li>
+</ul>
+
+<p>Each of these commands prints out a whole lot of information. Check out the <a href="#resources">Resources</a> below for detailed documentation on these fields.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To trace the stack for the current active thread:</b>
+<br>
+<code>
+[0]kdb&gt; bt
+</code>
+</blockquote>
+
+<blockquote>
+<b>To trace the stack for process with ID 575:</b>
+<br>
+<code>
+[0]kdb&gt; btp 575
+</code>
+</blockquote>
+
+<p><a name="N102C6"><span class="smalltitle">Other commands</span></a></p>
+
+<p>Here are a few other KDB commands that are useful in kernel debugging.</p>
+
+<p>The <code>id</code> command takes an address/symbol as an argument
+and disassembles instructions starting at that address. The environment
+variable <code>IDCOUNT</code> determines how many lines of output are displayed.</p>
+
+<p>The <code>ss</code> command single steps an instruction and returns control to KDB. A variation of this instruction is <code>ssb</code>,
+which executes instructions from the current instruction pointer
+address (printing the instruction on the screen) until it encounters an
+instruction that would cause a branch. Typical examples of branch
+instructions are <code>call</code>, <code>return</code>, and <code>jump</code>.</p>
+
+<p>The <code>go</code> command lets the system continue normal execution. The execution continues until a breakpoint is hit (if one has been applied).</p>
+
+<p>The <code>reboot</code> command reboots the system immediately. It does not bring down the system cleanly, and hence the results are unpredictable.</p>
+
+<p>The <code>ll</code> command takes an address, an offset, and another
+KDB command as arguments. It repeats the command for each element of a
+linked list. The command executed takes the address of the current
+element in the list as the argument.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To disassemble instructions starting from the routine schedule. The
+number of lines displayed depends on the environment variable <code>IDCOUNT</code>:</b>
+<br>
+<code>
+[0]kdb&gt; id schedule
+</code>
+</blockquote>
+
+<blockquote>
+<b>To execute instructions until it encounters a branch condition (in this case, instruction <code>jne</code>):</b>
+<br>
+<code>
+[0]kdb&gt; ssb<br>
+<br>
+0xc0105355  default_idle+0x25:  cli<br>
+0xc0105356  default_idle+0x26:  mov  0x14(%edx),%eax<br>
+0xc0105359  default_idle+0x29:  test %eax, %eax<br>
+0xc010535b  default_idle+0x2b:  jne  0xc0105361 default_idle+0x31
+</code>
+</blockquote>
+
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="N10336"><span class="atitle">Tips and tricks</span></a></p>
+
+<p>Debugging a problem involves locating the source of the problem
+using a debugger (or any other tool) and using the source code to track
+the root cause of the problem. Using source code alone to determine
+problems is extremely difficult and may be possible only for expert
+kernel hackers. On the other hand, newbies tend to rely excessively on
+debuggers to fix bugs. This approach may lead to incorrect solutions to
+problems. The fear is that such an approach leads to fixing symptoms
+rather than the actual problems. A classic example of such a mistake is
+adding error handling code to take care of NULL pointers or bad
+references without looking into the real cause of the invalid
+references.</p>
+
+<p>The dual approach of studying the code and using debugging tools is the best way to identify and fix problems.</p>
+
+<p>The primary use of debuggers is to get to the location of the bug,
+confirm the symptom (and cause, in some cases), determine the values of
+variables, and determine how the program got there (that is, establish
+the call stack). An experienced hacker will know which debugger to use
+for a particular kind of problem and will quickly obtain the necessary
+information from debugging and get on with analyzing the code to
+identify the cause.</p>
+
+<p>Here, then, are some tips for you to achieve the above mentioned
+results quickly using KDB. Of course, keep in mind that speed and
+accuracy in debugging comes with experience, practice, and good
+knowledge of the system (hardware, kernel internals, etc.)</p>
+
+<p><a name="N1034A"><span class="smalltitle">Tip #1</span></a></p>
+
+<p>In KDB, typing an address at the prompt returns its nearest symbol
+match. This is extremely useful in stack analysis and in determining
+the addresses/values of global data and function addresses. Similarly,
+typing the name of a symbol returns its virtual address.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To indicate that the function <code>sys_read</code> starts at address 0xc013db4c:</b>
+<br>
+<code>
+[0]kdb&gt; 0xc013db4c<br>
+<br>
+0xc013db4c = 0xc013db4c (sys_read)
+</code>
+</blockquote>
+
+<p>Similarly,</p>
+
+<blockquote>
+<b>Similarly, to indicate that <code>sys_write</code> is at address 0xc013dcc8:</b>
+<br>
+<code>
+[0]kdb&gt; sys_write<br>
+<br>
+sys_write = 0xc013dcc8 (sys_write)
+</code>
+</blockquote>
+
+<p>These help in locating global data and function addresses while analyzing stacks.</p>
+
+<p><a name="N10387"><span class="smalltitle">Tip #2</span></a></p>
+
+<p>Whenever present, use the <code>CONFIG_FRAME_POINTER</code> option
+while compiling the kernel with KDB. To do this, you need to select the
+"Compile the kernel with frame pointers" option under the "Kernel
+hacking" section while configuring the kernel. This ensures that the
+frame pointer register will be used as a frame pointer leading to
+accurate tracebacks. You could, in fact, manually dump the contents of
+the frame pointer register and trace the entire stack. For example, on
+an i386 machine, the %ebp register can be used to traceback the entire
+stack.</p>
+
+<p>For example, after executing the first instruction at function <code>rmqueue()</code>, the stack looked as follows:</p>
+
+<blockquote>
+<code>
+[0]kdb&gt; md %ebp<br>
+<br>
+0xc74c9f38 c74c9f60  c0136c40 000001f0 00000000<br>
+0xc74c9f48 08053328 c0425238 c04253a8 00000000<br>
+0xc74c9f58 000001f0  00000246 c74c9f6c c0136a25<br>
+0xc74c9f68 c74c8000  c74c9f74  c0136d6d c74c9fbc<br>
+0xc74c9f78 c014fe45  c74c8000  00000000 08053328<br>
+<br>
+[0]kdb&gt; 0xc0136c40<br>
+<br>
+0xc0136c40 = 0xc0136c40 (__alloc_pages +0x44)<br>
+<br>
+[0]kdb&gt; 0xc0136a25<br>
+<br>
+0xc0136a25 = 0xc0136a25 (_alloc_pages +0x19)<br>
+<br>
+[0]kdb&gt; 0xc0136d6d<br>
+<br>
+0xc0136d6d = 0xc0136d6d (__get_free_pages +0xd)
+</code>
+</blockquote>
+
+<p>We can see that <code>rmqueue()</code> has been called by <code>__alloc_pages</code>, which in turn has been called by <code>_alloc_pages</code>, and so on.</p>
+
+<p>The first double word of every frame points to the next frame and
+this is immediately followed by the address of the calling function.
+Hence, tracing the stack becomes an easy job.</p>
+
+<p><a name="N103DA"><span class="smalltitle">Tip #3</span></a></p>
+
+<p>The <code>go</code> command, optionally, takes an address as a
+parameter. If you want to continue execution at a particular address,
+you could provide that address as a parameter. The other alternative is
+to modify the instruction pointer register using the <code>rm</code> command and just type <code>go</code>.
+This would be useful if you wanted to skip a particular instruction or
+a set of instructions that appeared to be causing a problem. Note,
+though, that using this instruction without care could lead to severe
+problems, and the system might crash badly.</p>
+
+<p><a name="N103F1"><span class="smalltitle">Tip #4</span></a></p>
+
+<p>You can define your own set of commands with a useful command called <code>defcmd</code>.
+For example, whenever you hit a breakpoint, you might wish to
+simultaneously check a particular variable, check the contents of some
+registers, and dump the stack. Normally, you would have to type a
+series of commands to be able to do this all at the same time. The <code>defcmd</code>
+allows you to define your own command, which could consist of one or
+more of the predefined KDB commands. Only one command would then be
+needed to do all three jobs. The syntax for this is as follows:</p>
+
+<blockquote>
+<code>
+[0]kdb&gt; defcmd name "usage" "help"<br>
+<br>
+[0]kdb&gt; [defcmd] type the commands here<br>
+<br>
+[0]kdb&gt; [defcmd] endefcmd
+</code>
+</blockquote>
+
+<p>For example, a (trivial) new command called <code>hari</code> could
+be defined that would display one line of memory starting at address
+0xc000000, display the contents of the registers, and dump the stack:</p>
+
+<blockquote>
+<code>
+[0]kdb&gt; defcmd hari "" "no arguments needed"<br>
+<br>
+[0]kdb&gt; [defcmd] md 0xc000000 1<br>
+<br>
+[0]kdb&gt; [defcmd] rd<br>
+<br>
+[0]kdb&gt; [defcmd] md %ebp 1<br>
+<br>
+[0]kdb&gt; [defcmd] endefcmd
+</code>
+</blockquote>
+
+<p>The output of this command would be:</p>
+
+<blockquote>
+<code>
+[0]kdb&gt; hari<br>
+<br>
+[hari]kdb&gt; md 0xc000000 1<br>
+<br>
+0xc000000 00000001 f000e816 f000e2c3 f000e816<br>
+<br>
+[hari]kdb&gt; rd<br>
+<br>
+eax = 0x00000000 ebx = 0xc0105330 ecx = 0xc0466000 edx = 0xc0466000<br>
+....<br>
+...<br>
+<br>
+[hari]kdb&gt; md %ebp 1<br>
+<br>
+0xc0467fbc c0467fd0 c01053d2 00000002 000a0200<br>
+<br>
+[0]kdb&gt;
+</code>
+</blockquote>
+
+<p><a name="N1045B"><span class="smalltitle">Tip #5</span></a></p>
+
+<p>The <code>bph</code> and <code>bpha</code> commands can be used
+(provided the architecture supports use of hardware registers) to apply
+read and write breakpoints. This means we can get control whenever data
+is read from or written into a particular address. This can be
+extremely handy when debugging data/memory corruption problems, where
+you can use it to identify the corrupting code/process.</p>
+
+<p><b>Examples</b></p>
+
+<blockquote>
+<b>To enter the kernel debugger whenever four bytes are written into address 0xc0204060:</b>
+<br>
+<code>
+[0]kdb&gt; bph 0xc0204060 dataw 4
+</code>
+</blockquote>
+
+<blockquote>
+<b>To enter the kernel debugger when at least two bytes of data starting at 0xc000000 are read:</b>
+<br>
+<code>
+[0]kdb&gt; bph 0xc000000 datar 2
+</code>
+</blockquote>
+
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="N1048A"><span class="atitle">Conclusion</span></a></p>
+
+<p>KDB is a handy and powerful tool for performing kernel debugging. It
+offers various options and enables analysis of memory contents and data
+structures. Best of all, it does not require an additional machine to
+perform the debugging.</p>
+
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="resources"><span class="atitle">Resources</span></a></p>
+<ul><li>Find the KDB man pages in the Documentation/kdb directory.<br><br></li><li>For information on setting up the serial console, look for serial-console.txt in the Documentation directory.<br><br></li><li><a href="http://oss.sgi.com/projects/kdb">Download KDB</a> at SGI's kernel debugger project Web site.<br><br></li><li>For an overview of several scenario-based debugging techniques for Linux, read "<a href="http://www-106.ibm.com/developerworks/linux/library/l-debug/">Mastering Linux debugging techniques</a>" (<i>developerWorks,</i> August 2002).<br><br></li><li>The tutorial "<a href="http://www-106.ibm.com/developerworks/edu/l-dw-linuxkernel-i.html">Compiling the Linux kernel</a>" (<i>developerWorks,</i> August 2000) walks you through configuring, compiling, and installing the kernel.<br><br></li><li>IBM AIX users can get help using KDB for AIX on the <a href="http://www16.boulder.ibm.com/pseries/en_US/aixprggd/kernextc/kdb.htm">KDB Kernel Debugger and Command</a> page.<br><br></li><li>Those looking for information on debugging OS/2 should read <a href="http://publib-b.boulder.ibm.com/Redbooks.nsf/9445fa5b416f6e32852569ae006bb65f/b797e96d6232122d8525659d002a5596?OpenDocument&amp;Highlight=0,xSeries,Netfinity">Volume II</a> of the four-volume IBM Redbook, <i>The OS/2 Debugging Handbook</i>.<br><br></li><li>Find more <a href="http://www-106.ibm.com/developerworks/linux/">resources for Linux developers</a> in the <i>developerWorks</i> Linux zone.<br></li></ul>
+<br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><a name="author"><span class="atitle">About the author</span></a></p><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td colspan="2"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="5" width="100%"></td></tr><tr align="left" valign="top"><td><p></p></td><td><p>Hariprasad
+Nellitheertha works in IBM's Linux Technology Center in Bangalore,
+India. He is currently working on the Linux Change Team fixing kernel
+and other Linux bugs. Hari has worked on the OS/2 kernel and file
+systems. His interests include Linux kernel internals, file systems,
+and autonomic computing. You can contact Hari at <a href="mailto:nharipra@in.ibm.com?cc=dwlinux@us.ibm.com&amp;Subject=Inside%20the%20Linux%20kernel%20debugger">nharipra@in.ibm.com</a>.</p></td></tr></tbody></table><br><br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><img src="Inside%20the%20Linux%20kernel%20debugger_files/blue_rule.gif" alt="" height="1" width="100%"></td></tr></tbody></table><table class="no-print" align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br><p><span class="atitle"><a name="rate">Rate this content</a></span></p><form action="//www-128.ibm.com/developerworks/utils/RatingsHandler" method="post"><input value="Inside the Linux kernel debugger" name="ArticleTitle" type="hidden"><input value="Linux, Open source" name="Zone" type="hidden"><input value="http://www.ibm.com/developerworks/thankyou/feedback-thankyou.html" name="RedirectURL" type="hidden"><input value="11316" name="ArticleID" type="hidden"><img src="Inside%20the%20Linux%20kernel%20debugger_files/gray_rule.gif" alt="" height="1" width="100%"><br><table class="v14-gray-table-border" border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td width="100%"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td colspan="3"><p>Please take a moment to complete this form to help us better serve you.</p></td></tr><tr valign="top"><td width="140"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="1" width="140"><br><p><label for="Goal">Did the information help you to achieve your goal?</label></p></td><td width="303"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="6" width="303"><br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><input value="Yes" id="Goal" name="Goal" type="radio">Yes</td><td><input value="No" id="Goal" name="Goal" type="radio">No</td><td><input value="Don't know" id="Goal" name="Goal" type="radio">Don't know</td></tr></tbody></table></td><td width="100%">&nbsp;</td></tr><tr><td colspan="3"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="12" width="8"></td></tr><tr valign="top"><td width="140"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="1" width="140"><br><p><label for="Comments">Please provide us with comments to help improve this page:</label></p></td><td width="303"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="6" width="303"><br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><textarea class="iform" cols="35" rows="5" wrap="virtual" id="Comments" name="Comments">&nbsp;</textarea></td></tr></tbody></table></td><td width="100%">&nbsp;</td></tr><tr><td colspan="3"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="12" width="8"></td></tr><tr valign="top"><td width="140"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="1" width="140"><br><p><label for="Rating">How useful is the information?
+<br>
+(1 = Not at all,
+<br>
+5 = Extremely useful)</label></p></td><td width="303"><img src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" alt="" height="6" width="303"><br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><input value="1" id="Rating" name="Rating" type="radio">1</td><td><input value="2" id="Rating" name="Rating" type="radio">2</td><td><input value="3" id="Rating" name="Rating" type="radio">3</td><td><input value="4" id="Rating" name="Rating" type="radio">4</td><td><input value="5" id="Rating" name="Rating" type="radio">5</td></tr></tbody></table></td><td width="100%">&nbsp;</td></tr></tbody></table></td></tr></tbody></table><table class="v14-gray-table-border" border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td colspan="3"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="8" width="8"></td></tr><tr><td width="8"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="8"></td><td colspan="3"><input alt="Submit" src="Inside%20the%20Linux%20kernel%20debugger_files/submit.gif" border="0" height="21" type="image" width="120"></td></tr><tr><td colspan="3"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="8" width="8"></td></tr></tbody></table></form><br><table align="right" cellpadding="0" cellspacing="0"><tbody><tr align="right"><td><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><img src="Inside%20the%20Linux%20kernel%20debugger_files/u_bold.gif" alt="" border="0" height="16" width="16"><br></td><td align="right" valign="top"><a href="#main" class="fbox"><b>Back to top</b></a></td></tr></tbody></table></td></tr></tbody></table><br><br></td><td width="10"><img alt="" src="Inside%20the%20Linux%20kernel%20debugger_files/c.gif" height="1" width="10"></td></tr></tbody></table></td></tr></tbody></table><!--FOOTER_BEGIN--><br><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td class="bbg" height="19"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td><span class="spacer">&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="http://www.ibm.com/ibm/" class="mainlink">About IBM</a></td><td class="footer-divider" width="27">&nbsp;&nbsp;&nbsp;&nbsp;</td><td><a href="http://www.ibm.com/privacy/" class="mainlink">Privacy</a></td><td class="footer-divider" width="27">&nbsp;&nbsp;&nbsp;&nbsp;</td><td><a href="http://www.ibm.com/contact/" class="mainlink">Contact</a></td></tr></tbody></table></td></tr></tbody></table><script type="text/javascript" language="JavaScript1.2">
+//&lt;!--
+var language="en";
+var country="us";
+var site="cvm";
+var module="devworks";
+var version="1";
+var rate="0.51"; 
+//--&gt;
+</script><script language="JavaScript1.2" type="text/javascript" src="Inside%20the%20Linux%20kernel%20debugger_files/popup.js"></script><script type="text/javascript" language="JavaScript1.2" src="Inside%20the%20Linux%20kernel%20debugger_files/design.js"></script><script type="text/javascript" language="JavaScript1.2" src="Inside%20the%20Linux%20kernel%20debugger_files/cookie.js"></script><script type="text/javascript" language="JavaScript1.2" src="Inside%20the%20Linux%20kernel%20debugger_files/v11trigger.js"></script><script type="text/javascript" language="JavaScript1.2" src="Inside%20the%20Linux%20kernel%20debugger_files/stats.js"></script><noscript><img border="0" alt="" height="1" width="1" src="//stats.www.ibm.com/rc/images/uc.GIF?R=noscript"/></noscript><!--FOOTER_END--><!--XSLT stylesheet used to transform this file:  dw-document-html-5.0.xsl--></body></html>

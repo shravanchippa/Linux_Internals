@@ -1,0 +1,171 @@
+execve("/usr/kerberos/bin/telnet", ["telnet", "192.168.0.7"], [/* 36 vars */]) = 0
+uname({sys="Linux", node="server.bluevalley.com", ...}) = 0
+brk(0)                                  = 0x9dbc000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=78348, ...}) = 0
+old_mmap(NULL, 78348, PROT_READ, MAP_PRIVATE, 3, 0) = 0xb7f31000
+close(3)                                = 0
+open("/usr/lib/libkrb4.so.2", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0`\223|\000"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=92304, ...}) = 0
+old_mmap(NULL, 113712, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xce2000
+old_mmap(0xcf8000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x15000) = 0xcf8000
+old_mmap(0xcf9000, 19504, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xcf9000
+close(3)                                = 0
+open("/usr/lib/libdes425.so.3", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\260\214"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=11596, ...}) = 0
+old_mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f30000
+old_mmap(NULL, 13056, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xd5d000
+old_mmap(0xd60000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0xd60000
+close(3)                                = 0
+open("/usr/lib/libkrb5.so.3", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0`\210\326"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=415188, ...}) = 0
+old_mmap(NULL, 413000, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x111000
+old_mmap(0x174000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x63000) = 0x174000
+close(3)                                = 0
+open("/usr/lib/libk5crypto.so.3", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0`\222\323"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=136016, ...}) = 0
+old_mmap(NULL, 134560, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x176000
+old_mmap(0x196000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x20000) = 0x196000
+close(3)                                = 0
+open("/lib/libcom_err.so.2", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\354h\304"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=7004, ...}) = 0
+old_mmap(NULL, 8636, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x884000
+old_mmap(0x886000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1000) = 0x886000
+close(3)                                = 0
+open("/lib/libresolv.so.2", O_RDONLY)   = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\360s\222"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=79488, ...}) = 0
+old_mmap(NULL, 75944, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x5a8000
+old_mmap(0x5b7000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0xf000) = 0x5b7000
+old_mmap(0x5b9000, 6312, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x5b9000
+close(3)                                = 0
+open("/lib/libtermcap.so.2", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\320\333"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=12592, ...}) = 0
+old_mmap(NULL, 14280, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x587000
+old_mmap(0x58a000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0x58a000
+close(3)                                = 0
+open("/lib/tls/libc.so.6", O_RDONLY)    = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\320^j\000"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=1454802, ...}) = 0
+old_mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f2f000
+old_mmap(NULL, 1223900, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x197000
+old_mmap(0x2bc000, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x124000) = 0x2bc000
+old_mmap(0x2c0000, 7388, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x2c0000
+close(3)                                = 0
+old_mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f2e000
+mprotect(0x2bc000, 4096, PROT_READ)     = 0
+mprotect(0x78a000, 4096, PROT_READ)     = 0
+set_thread_area({entry_number:-1 -> 6, base_addr:0xb7f2e6c0, limit:1048575, seg_32bit:1, contents:0, read_exec_only:0, limit_in_pages:1, seg_not_present:0, useable:1}) = 0
+munmap(0xb7f31000, 78348)               = 0
+brk(0)                                  = 0x9dbc000
+brk(0x9ddd000)                          = 0x9ddd000
+uname({sys="Linux", node="server.bluevalley.com", ...}) = 0
+ioctl(0, SNDCTL_TMR_TIMEBASE or TCGETS, {B38400 opost isig icanon echo ...}) = 0
+open("/etc/nsswitch.conf", O_RDONLY)    = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=1623, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f44000
+read(3, "#\n# /etc/nsswitch.conf\n#\n# An ex"..., 4096) = 1623
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+munmap(0xb7f44000, 4096)                = 0
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=78348, ...}) = 0
+old_mmap(NULL, 78348, PROT_READ, MAP_PRIVATE, 3, 0) = 0xb7f31000
+close(3)                                = 0
+open("/lib/libnss_files.so.2", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\20\33\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=45889, ...}) = 0
+old_mmap(NULL, 41608, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x68b000
+old_mmap(0x694000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x8000) = 0x694000
+close(3)                                = 0
+munmap(0xb7f31000, 78348)               = 0
+open("/etc/services", O_RDONLY)         = 3
+fcntl64(3, F_GETFD)                     = 0
+fcntl64(3, F_SETFD, FD_CLOEXEC)         = 0
+fstat64(3, {st_mode=S_IFREG|0644, st_size=20496, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f44000
+read(3, "# /etc/services:\n# $Id: services"..., 4096) = 4096
+close(3)                                = 0
+munmap(0xb7f44000, 4096)                = 0
+socket(PF_FILE, SOCK_STREAM, 0)         = 3
+fcntl64(3, F_GETFL)                     = 0x2 (flags O_RDWR)
+fcntl64(3, F_SETFL, O_RDWR|O_NONBLOCK)  = 0
+connect(3, {sa_family=AF_FILE, path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+close(3)                                = 0
+socket(PF_FILE, SOCK_STREAM, 0)         = 3
+fcntl64(3, F_GETFL)                     = 0x2 (flags O_RDWR)
+fcntl64(3, F_SETFL, O_RDWR|O_NONBLOCK)  = 0
+connect(3, {sa_family=AF_FILE, path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+close(3)                                = 0
+gettimeofday({1194155504, 802132}, NULL) = 0
+getpid()                                = 4807
+open("/etc/resolv.conf", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=25, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f44000
+read(3, "nameserver 192.168.0.154\n", 4096) = 25
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+munmap(0xb7f44000, 4096)                = 0
+uname({sys="Linux", node="server.bluevalley.com", ...}) = 0
+open("/etc/host.conf", O_RDONLY)        = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=17, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f44000
+read(3, "order hosts,bind\n", 4096)     = 17
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+munmap(0xb7f44000, 4096)                = 0
+open("/etc/hosts", O_RDONLY)            = 3
+fcntl64(3, F_GETFD)                     = 0
+fcntl64(3, F_SETFD, FD_CLOEXEC)         = 0
+fstat64(3, {st_mode=S_IFREG|0644, st_size=176, ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f44000
+read(3, "# Do not remove the following li"..., 4096) = 176
+read(3, "", 4096)                       = 0
+close(3)                                = 0
+munmap(0xb7f44000, 4096)                = 0
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=78348, ...}) = 0
+old_mmap(NULL, 78348, PROT_READ, MAP_PRIVATE, 3, 0) = 0xb7f31000
+close(3)                                = 0
+open("/lib/libnss_dns.so.2", O_RDONLY)  = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\300\r\0"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0755, st_size=21280, ...}) = 0
+old_mmap(NULL, 20612, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x2c2000
+old_mmap(0x2c6000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x3000) = 0x2c6000
+close(3)                                = 0
+munmap(0xb7f31000, 78348)               = 0
+socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
+connect(3, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.0.154")}, 28) = 0
+fcntl64(3, F_GETFL)                     = 0x2 (flags O_RDWR)
+fcntl64(3, F_SETFL, O_RDWR|O_NONBLOCK)  = 0
+gettimeofday({1194155504, 803972}, NULL) = 0
+poll([{fd=3, events=POLLOUT, revents=POLLOUT}], 1, 0) = 1
+send(3, "rc\1\0\0\1\0\0\0\0\0\0\0017\0010\003168\003192\7in-add"..., 42, MSG_NOSIGNAL) = 42
+poll([{fd=3, events=POLLIN, revents=POLLERR}], 1, 5000) = 1
+close(3)                                = 0
+socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
+connect(3, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("192.168.0.154")}, 28) = 0
+fcntl64(3, F_GETFL)                     = 0x2 (flags O_RDWR)
+fcntl64(3, F_SETFL, O_RDWR|O_NONBLOCK)  = 0
+gettimeofday({1194155504, 804344}, NULL) = 0
+poll([{fd=3, events=POLLOUT, revents=POLLOUT}], 1, 0) = 1
+send(3, "rc\1\0\0\1\0\0\0\0\0\0\0017\0010\003168\003192\7in-add"..., 42, MSG_NOSIGNAL) = 42
+poll([{fd=3, events=POLLIN, revents=POLLERR}], 1, 5000) = 1
+close(3)                                = 0
+fstat64(1, {st_mode=S_IFCHR|0600, st_rdev=makedev(136, 1), ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7f44000
+write(1, "Trying 192.168.0.7...\r\n", 23) = 23
+socket(PF_INET, SOCK_STREAM, IPPROTO_IP) = 3
+setsockopt(3, SOL_IP, IP_TOS, [16], 4)  = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(23), sin_addr=inet_addr("192.168.0.7")}, 16) = -1 EHOSTUNREACH (No route to host)
+write(2, "telnet: connect to address 192.1"..., 57) = 57
+close(3)                                = 0
+write(2, "telnet: Unable to connect to rem"..., 59) = 59
+exit_group(1)                           = ?

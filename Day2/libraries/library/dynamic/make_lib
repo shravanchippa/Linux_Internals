@@ -1,0 +1,7 @@
+gcc -fPIC -c sh_library.c
+ld -shared -soname libshsample.so.1 -o libshsample.so.1.0 -lc sh_library.o
+ldconfig -v -n .
+ln -sf libshsample.so.1 libshsample.so
+cp -fv *.so* /usr/lib
+cp new_sh_lib.h /usr/include -f
+

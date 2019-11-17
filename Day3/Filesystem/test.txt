@@ -1,0 +1,6 @@
+at:x:25:25:Batch jobs daemon:/var/spool/atjobs:/bin/bash
+avahi:x:103:106:User for Avahi:/var/run/avahi-daemon:/bin/false
+beagleindex:x:104:107:User for Beagle indexing:/var/cache/beagle:/bin/bash
+bin:x:1:1:bin:/bin:/bin/bash
+daemon:x:2:2:Daemon:/sbin:/bin/bash
+ftp:x:40:49:FTP account:/srv/ftp:/bin/b

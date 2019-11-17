@@ -1,0 +1,7 @@
+fstat64(1, {st_mode=S_IFCHR|0600, st_rdev=makedev(136, 1), ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7fdb000
+write(1, "this is child: PID is 4425\n", 27) = 27
+getppid()                               = 1
+write(1, "parent pid is 1\n", 16)       = 16
+write(1, "Terminating child \n", 19)    = 19
+exit_group(0)                           = ?
